@@ -2,6 +2,7 @@ import WaterTank from "../WaterTank";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
 import InputGroup from 'react-bootstrap/InputGroup'
 import "../Setup/index.css"
 import { useEffect, useState } from "react";
@@ -11,31 +12,38 @@ export default function WaterControl({isConfigured,min,max,hg,low}){
     const [error,setError]=useState(false)
     const [drain,setDrain]=useState(false)
     const [errorOperation, SetErrorOperation]=useState(false)
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     const handleAdd=()=>{
         setDrain(false)
+        setError(false);
+        SetErrorOperation(false);
         if(currentValue<max){
             setCurrentValue(currentValue+1);
-            SetErrorOperation(false);
         }else{
             SetErrorOperation(true);
         }
         
     }
     const handleSubstract=()=>{
-        setDrain(false)
+        setError(false);
+        setDrain(false);
+        SetErrorOperation(false);
         if(currentValue>min){
             setCurrentValue(currentValue-1);
-            SetErrorOperation(false);
         }else{
             SetErrorOperation(true);
         }
     }
     const handleSet=(e)=>{
         setDrain(false)
+        setError(false);
+        SetErrorOperation(false);
         let value=parseInt(e.target.form[0].value)
         if( !isNaN(value) && value<=max && value>=min){
             setCurrentValue(value)
-            setError(false);
         }else{
             setError(true);
         }
@@ -74,17 +82,12 @@ export default function WaterControl({isConfigured,min,max,hg,low}){
                         <div class="alert alert-danger mt-3" role="alert">
                                 Out of boundaries
                         </div>
-                        )}{error && 
-                        (
-                        <div class="alert alert-danger mt-3" role="alert">
-                                Out of boundaries
-                        </div>
                         )}
                 </Form>
             </div>
         <Form>
             <Form.Group >
-          <Form.Label>set Points (Lts)</Form.Label>
+          <Form.Label>Set Points (Lts)</Form.Label>
         <InputGroup >
           <Form.Control
             type="number"
@@ -116,12 +119,35 @@ export default function WaterControl({isConfigured,min,max,hg,low}){
             variant="danger" 
             disabled={!isConfigured}
             onClick={()=>{
-                setCurrentValue(min);
-                setDrain(true)
+                handleShow()
+                SetErrorOperation(false);
+                setError(false)
+                setDrain(false)
             }}
             block>
                 Drain
             </Button>
+            <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Are you sure?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>you are going to set the water level to minimum</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={
+              ()=>{
+                  handleClose(); 
+                setCurrentValue(min);
+                
+                setDrain(true)
+                }
+                  }>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
             {drain && 
         (
         <div class="alert alert-success mt-3" role="success">

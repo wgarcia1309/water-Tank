@@ -47,7 +47,7 @@ export default function Setup(){
 
             <_Form  
             names={["Capacity","Alarms"]}
-            inputs={[["Maximun","Minimun"],["High Level","Low Level"]]}
+            inputs={[["Maximum","Minimum"],["High Level","Low Level"]]}
             defaultValues={[[maximun,minimun],[highLvl,lowLvl]]}
             defaulthandlers={[[setMaximun,setMinimun], [setHighLvl,setLowLvl]]}
             measure="Lts"
